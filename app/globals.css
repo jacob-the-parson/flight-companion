@@ -1,0 +1,363 @@
+@import "tailwindcss";
+
+/* class-based dark mode (themeStore toggles .dark on <html>) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================================
+   FLIGHT COMPANION DESIGN TOKENS — two independent axes:
+     THEME (light | dark)  -> color values        (:root / .dark)
+     VIBE  (toon | ...)    -> treatment values    ([data-vibe])
+   Every color ROLE is a 3-tone triplet: shadow / base / high.
+   Token system inherited from the NRO Studio shell; the chart
+   palette (--viz-*) is added at the end of this file.
+   ============================================================ */
+
+:root {
+  /* --- surfaces & ink (light) --- */
+  --surface: #fafafa;
+  --surface-raised: #ffffff;
+  --surface-sunken: #f4f4f5;
+  --control: #f1f1f3;          /* button/segmented-control fills — NOT the pit */
+  --track: #e4e4e7;            /* segmented/toggle TRACKS — dark enough that a
+                                  raised active chip visibly pops */
+  --ink: #18181b;
+  --ink-muted: #71717a;
+  --edge: #e4e4e7;
+  --edge-strong: #18181b;      /* the outline ink */
+  --shadow-ink: rgb(24 24 27 / 0.18);
+
+  /* --- primary · emerald (brand) --- */
+  --primary-shadow: #047857;
+  --primary: #10b981;
+  --primary-high: #a7f3d0;
+
+  /* --- secondary · orange (the chrome accent) --- */
+  --secondary-shadow: #c2410c;
+  --secondary: #f97316;
+  --secondary-high: #fdba74;
+
+  /* --- tertiary · violet (creative accent) --- */
+  --tertiary-shadow: #6d28d9;
+  --tertiary: #8b5cf6;
+  --tertiary-high: #ddd6fe;
+}
+
+.dark {
+  --surface: #0a0a0b;
+  --surface-raised: #17171a;
+  --surface-sunken: #000000;
+  --control: #26262b;          /* visibly a control, never a black hole */
+  --track: #303036;            /* segmented tracks (zinc-800 class of dark) */
+  --ink: #fafafa;
+  --ink-muted: #a1a1aa;
+  --edge: #27272a;
+  --edge-strong: #d4d4d8;      /* outlines read light on dark — comic style */
+  --shadow-ink: rgb(0 0 0 / 0.55);
+}
+
+/* --- VIBE: soft (default — the pristine look: soft shadows, soft edges) ---
+   Layered shadows: a tight contact line + a lifted ambient, so island corners
+   read raised. Dark mode deepens the alphas (soft shadows die on black). */
+[data-vibe="soft"] {
+  --outline-w: 1px;
+  --card-edge: var(--edge);
+  --shadow-vibe: 0 1px 2px 0 rgb(0 0 0 / 0.07), 0 6px 16px -4px rgb(0 0 0 / 0.12);
+  --shadow-vibe-sm: 0 1px 2px 0 rgb(0 0 0 / 0.08), 0 2px 6px -2px rgb(0 0 0 / 0.08);
+  --shadow-vibe-lg: 0 2px 4px 0 rgb(0 0 0 / 0.06), 0 16px 32px -8px rgb(0 0 0 / 0.16);
+}
+
+.dark[data-vibe="soft"] {
+  --shadow-vibe: 0 1px 2px 0 rgb(0 0 0 / 0.55), 0 8px 20px -4px rgb(0 0 0 / 0.6);
+  --shadow-vibe-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5), 0 2px 6px -2px rgb(0 0 0 / 0.5);
+  --shadow-vibe-lg: 0 2px 4px 0 rgb(0 0 0 / 0.5), 0 18px 36px -8px rgb(0 0 0 / 0.65);
+}
+
+/* --- VIBE: toon — ink outlines + hard stepped drop shadows (no blur) --- */
+[data-vibe="toon"] {
+  --outline-w: 2px;
+  --card-edge: var(--edge-strong);
+  --shadow-vibe: 3px 3px 0 0 var(--shadow-ink);
+  --shadow-vibe-sm: 2px 2px 0 0 var(--shadow-ink);
+  --shadow-vibe-lg: 5px 5px 0 0 var(--shadow-ink);
+}
+
+/* expose tokens to Tailwind utilities (bg-primary, text-ink, shadow-toon, …) */
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-control: var(--control);
+  --color-track: var(--track);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-edge: var(--edge);
+  --color-edge-strong: var(--edge-strong);
+
+  --color-primary-shadow: var(--primary-shadow);
+  --color-primary: var(--primary);
+  --color-primary-high: var(--primary-high);
+  --color-secondary-shadow: var(--secondary-shadow);
+  --color-secondary: var(--secondary);
+  --color-secondary-high: var(--secondary-high);
+  --color-tertiary-shadow: var(--tertiary-shadow);
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-high: var(--tertiary-high);
+
+  --shadow-vibe: var(--shadow-vibe);
+  --shadow-vibe-sm: var(--shadow-vibe-sm);
+  --shadow-vibe-lg: var(--shadow-vibe-lg);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* --- vibe composites (ready-to-wear; soft OR toon depending on data-vibe) --- */
+@utility vibe-card {
+  border-radius: 0.75rem;
+  border: var(--outline-w) solid var(--card-edge);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-vibe);
+}
+
+@utility vibe-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.375rem;
+  border: var(--outline-w) solid var(--card-edge);
+  padding: 0.5rem 1.125rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-vibe-sm);
+  transition: transform 100ms ease, box-shadow 100ms ease, background-color 150ms ease;
+
+  &:active {
+    transform: translate(1px, 1px);
+    box-shadow: none;
+  }
+}
+
+/* the ONE checkerboard (transparency wells: previews, swatches) — a single
+   implementation by law, never per-surface copies. Theme-aware via --checker. */
+.checker-bg {
+  --checker: rgb(0 0 0 / 0.08);
+  background-image:
+    linear-gradient(45deg, var(--checker) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--checker) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--checker) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--checker) 75%);
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  background-size: 16px 16px;
+}
+.dark .checker-bg {
+  --checker: rgb(255 255 255 / 0.07);
+}
+
+/* invisible scrollbars, everywhere — scrolling still works (wheel/touch/keys).
+   Islands stay clean; nothing carves a gutter out of the frame. */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* OPT-IN visible scrollbars for wide CANVAS VIEWPORTS (zoomed grids need the
+   affordance — mouse users can't shift-wheel-guess). Thin, theme-tinted. */
+.scrollbars {
+  scrollbar-width: thin;
+  scrollbar-color: var(--edge) transparent;
+}
+.scrollbars::-webkit-scrollbar {
+  display: block;
+  width: 8px;
+  height: 8px;
+}
+.scrollbars::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbars::-webkit-scrollbar-thumb {
+  background: var(--edge);
+  border-radius: 4px;
+}
+.scrollbars::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-muted);
+}
+.scrollbars::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+body {
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* ============================================================
+   AMBIENT BACKGROUND — two gradient layers of different TYPES
+   (radial glow + linear sweep) drifting/rotating on offset
+   periods, so the pit slowly morphs radial↔linear character.
+   Transforms only -> GPU-composited, effectively free.
+   ============================================================ */
+:root {
+  --ambient-a: rgb(249 115 22 / 0.055);   /* secondary tint */
+  --ambient-b: rgb(139 92 246 / 0.05);    /* tertiary tint */
+}
+.dark {
+  --ambient-a: rgb(249 115 22 / 0.07);
+  --ambient-b: rgb(139 92 246 / 0.065);
+}
+
+.ambient-bg {
+  position: relative;
+}
+.ambient-bg::before,
+.ambient-bg::after {
+  content: '';
+  position: absolute;
+  inset: -60%;
+  z-index: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+.ambient-bg::before {
+  background: radial-gradient(circle at 32% 30%, var(--ambient-a), transparent 55%);
+  animation: ambient-drift 26s ease-in-out infinite alternate;
+}
+.ambient-bg::after {
+  background: linear-gradient(115deg, transparent 25%, var(--ambient-b) 52%, transparent 78%);
+  animation: ambient-sweep 37s ease-in-out infinite alternate;
+}
+
+@keyframes ambient-drift {
+  0%   { transform: translate(-6%, -4%) scale(1); }
+  50%  { transform: translate(4%, 6%) scale(1.18); }
+  100% { transform: translate(8%, -6%) scale(0.95); }
+}
+@keyframes ambient-sweep {
+  0%   { transform: rotate(0deg) translateX(-4%); }
+  45%  { transform: rotate(80deg) translateX(3%); }
+  100% { transform: rotate(160deg) translateX(-2%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-bg::before,
+  .ambient-bg::after {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   CHART PALETTE — the dataviz layer. Categorical slots are
+   assigned in FIXED ORDER and never cycled; the four below pass
+   the palette validator on both chart surfaces (adjacent CVD
+   separation >= 8, normal-vision >= 15). Status colors are
+   reserved for state and always ship with an icon + label.
+   Text never wears a series color: values and labels use ink.
+   ============================================================ */
+:root {
+  --viz-surface: #ffffff;
+  --viz-1: #2a78d6;   /* blue    */
+  --viz-2: #eb6834;   /* orange  */
+  --viz-3: #1baf7a;   /* aqua    */
+  --viz-4: #eda100;   /* yellow  */
+  --viz-grid: #e1e0d9;
+  --viz-axis: #c3c2b7;
+  --viz-muted: #898781;
+  --viz-band: rgb(24 24 27 / 0.05);
+
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+}
+.dark {
+  --viz-surface: #17171a;
+  --viz-1: #3987e5;
+  --viz-2: #d95926;
+  --viz-3: #199e70;
+  --viz-4: #c98500;
+  --viz-grid: #2c2c2a;
+  --viz-axis: #383835;
+  --viz-muted: #898781;
+  --viz-band: rgb(255 255 255 / 0.06);
+}
+
+@theme inline {
+  --color-viz-surface: var(--viz-surface);
+  --color-viz-1: var(--viz-1);
+  --color-viz-2: var(--viz-2);
+  --color-viz-3: var(--viz-3);
+  --color-viz-4: var(--viz-4);
+  --color-viz-grid: var(--viz-grid);
+  --color-status-good: var(--status-good);
+  --color-status-warning: var(--status-warning);
+  --color-status-serious: var(--status-serious);
+  --color-status-critical: var(--status-critical);
+}
+
+/* uPlot: the library draws on canvas; only its DOM chrome needs theming */
+.uplot {
+  font-family: inherit;
+  line-height: 1.2;
+}
+.uplot .u-select {
+  background: rgb(42 120 214 / 0.12);
+}
+.uplot .u-cursor-x {
+  border-right: 1px solid var(--ink-muted);
+}
+.uplot .u-cursor-y {
+  display: none;
+}
+
+/* Leaflet: keep the map under the shell's overlays, theme its chrome */
+.leaflet-container {
+  z-index: 0;
+  background: var(--surface-sunken);
+  font-family: inherit;
+}
+.leaflet-bar a,
+.leaflet-control-attribution {
+  background: var(--surface-raised) !important;
+  color: var(--ink-muted) !important;
+}
+.leaflet-bar a {
+  border-bottom-color: var(--edge) !important;
+  color: var(--ink) !important;
+}
+.leaflet-control-attribution a {
+  color: var(--ink-muted) !important;
+}
+.dark .leaflet-tile-pane {
+  filter: brightness(0.72) contrast(1.05) saturate(0.8);
+}
+
+/* number inputs: no spinners fighting the field width */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* printing a checklist: paper is white, chrome is gone (Shell hides itself) */
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .ambient-bg::before,
+  .ambient-bg::after {
+    display: none;
+  }
+  .print-break-avoid {
+    break-inside: avoid;
+  }
+}
