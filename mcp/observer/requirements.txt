@@ -1,0 +1,4 @@
+# Packages the observer needs. Versions are the ones it was checked with on 2026-09-29
+# (Python 3.12.10, Windows 11). requirements-lock.txt pins every dependency as well.
+pymavlink==2.4.50   # MAVLink decoding. LGPL-3.0
+mcp==2.2.0          # Model Context Protocol server library. MIT

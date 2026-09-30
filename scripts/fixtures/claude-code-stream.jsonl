@@ -1,0 +1,32 @@
+{"type": "system", "subtype": "init", "model": "claude-fable-5-1", "session_id": "00000000-0000-4000-8000-000000000000", "tools": ["mcp__flight-companion__check_mission", "mcp__flight-companion__compare_parameters", "mcp__flight-companion__convert_mission", "mcp__flight-companion__convert_parameters", "mcp__flight-companion__explain_parameter", "mcp__flight-companion__list_examples", "mcp__flight-companion__list_formats", "mcp__flight-companion__read_flight_log", "mcp__flight-companion__read_mission", "mcp__flight-companion__read_parameters", "mcp__flight-companion__rules", "mcp__flight-companion__search_parameters", "mcp__flight-companion__write_examples"], "mcp_servers": [{"name": "flight-companion", "status": "connected"}]}
+{"type": "system", "subtype": "status"}
+{"type": "stream_event", "event": {"type": "message_start"}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "content_block_start", "index": 0, "content_block": {"type": "tool_use", "id": "toolu_01DNHApp2RAJZ8jHb3prko5G", "name": "mcp__flight-companion__explain_parameter", "input": {}, "caller": {"type": "direct"}}}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "input_json_delta", "partial_json": ""}}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "input_json_delta", "partial_json": "{\"names\": [\"COM_KILL_"}}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "input_json_delta", "partial_json": "DISARM\"]"}}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "input_json_delta", "partial_json": "}"}}, "parent_tool_use_id": null}
+{"type": "assistant", "message": {"role": "assistant", "content": [{"type": "tool_use", "id": "toolu_01DNHApp2RAJZ8jHb3prko5G", "name": "mcp__flight-companion__explain_parameter", "input": {"names": ["COM_KILL_DISARM"]}, "caller": {"type": "direct"}}]}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "content_block_stop", "index": 0}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "message_delta"}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "message_stop"}, "parent_tool_use_id": null}
+{"type": "rate_limit_event"}
+{"type": "user", "message": {"role": "user", "content": [{"tool_use_id": "toolu_01DNHApp2RAJZ8jHb3prko5G", "type": "tool_result", "content": [{"type": "text", "text": "{\n  \"schema\": \"flight-companion/parameter-explained@1\",\n  \"reference\": {\n    \"firmware\": \"PX4 v1.16.0\",\n    \"source\": \"https://github.com/PX4/PX4-Autopilot/blob/v1.16.0/docs/en/advanced_config/parameter_reference.md\",\n    \"licence\": \"CC BY 4.0, the PX4 documentation authors. https://creativecommons.org/licenses/by/4.0/\"\n  },\n  \"parameters\": [\n    {\n      \"name\": \"COM_KILL_DISARM\",\n      \"what_it_is\": \"Timeout value for disarming when kill switch is engaged.\",\n      \"group\": \"Commander\",\n      \"type\": \"FLOAT\",\n      \"unit\": \"s\",\n      \"firmware_default\": 5,\n      \"lowest\": 0,\n      \"highest\": 30,\n      \"step\": 0.1,\n      \"takes_effect\": \"at once\"\n    }\n  ]\n}"}]}]}, "parent_tool_use_id": null}
+{"type": "system", "subtype": "status"}
+{"type": "stream_event", "event": {"type": "message_start"}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "content_block_start", "index": 0, "content_block": {"type": "text", "text": ""}}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "According to PX4 v1"}}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": ".16.0's reference,"}}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": " `COM_KILL_"}}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "DISARM` ("}}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "the timeout for disarming"}}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": " when the kill switch is eng"}}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "aged) is measured in se"}}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "conds (s) and"}}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": " has a firmware default of "}}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "5."}}, "parent_tool_use_id": null}
+{"type": "assistant", "message": {"role": "assistant", "content": [{"type": "text", "text": "According to PX4 v1.16.0's reference, `COM_KILL_DISARM` (the timeout for disarming when the kill switch is engaged) is measured in seconds (s) and has a firmware default of 5."}]}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "content_block_stop", "index": 0}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "message_delta"}, "parent_tool_use_id": null}
+{"type": "stream_event", "event": {"type": "message_stop"}, "parent_tool_use_id": null}
+{"type": "result", "subtype": "success", "is_error": false, "result": "According to PX4 v1.16.0's reference, `COM_KILL_DISARM` (the timeout for disarming when the kill switch is engaged) is measured in seconds (s) and has a firmware default of 5.", "session_id": "00000000-0000-4000-8000-000000000000", "permission_denials": [], "num_turns": 2}

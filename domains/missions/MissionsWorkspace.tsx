@@ -160,9 +160,8 @@ export function MissionsWorkspace() {
   const from = mission?.source ? formatById(mission.source).label : null;
   const subtitle = mission
     ? [
-        from ? `Read from a ${from.toLowerCase()}` : 'Made in the app',
-        mission.vehicle,
-        mission.firmware === 'px4' ? 'PX4' : mission.firmware === 'ardupilot' ? 'ArduPilot' : null,
+        from ? `Read from: ${from}` : 'Made in the app',
+        mission.vehicle ?? (mission.firmware === 'px4' ? 'PX4' : mission.firmware === 'ardupilot' ? 'ArduPilot' : null),
         dirty ? 'changed, not saved' : null,
       ]
         .filter(Boolean)

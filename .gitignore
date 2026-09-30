@@ -47,3 +47,12 @@ next-env.d.ts
 # repository, and it carries the flights' GPS coordinates and the board's UUID.
 # Regenerate: python scripts/pyulog_reference.py ../logs scripts/ulog-reference.json
 /scripts/ulog-reference.json
+
+# the observer: its Python environment is made on each computer, never copied
+/mcp/observer/.venv/
+__pycache__/
+
+# the desktop app: built, never written by hand
+/desktop/dist/
+/release/
+/out-hosted/

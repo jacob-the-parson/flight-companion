@@ -12,7 +12,10 @@ import { fmtDuration, fmtNum } from '@/lib/units';
 import { enduranceMinutes, useActiveAircraft } from '@/stores/core/aircraftStore';
 import { useFavoritesStore } from '@/stores/core/favoritesStore';
 import { useActiveTemplate, useChecklistsStore } from '@/stores/domains/checklistsStore';
+import { liveLine, useLiveStore } from '@/stores/domains/liveStore';
 import { useLogsStore } from '@/stores/domains/logsStore';
+import { useMissionsStore } from '@/stores/domains/missionsStore';
+import { useParamsStore } from '@/stores/domains/paramsStore';
 import { usePlannerStore, usePlanResult } from '@/stores/domains/plannerStore';
 
 // the order of a flying day
@@ -54,6 +57,13 @@ export default function DashboardPage() {
   const logCount = useLogsStore((s) => s.logs.length);
   const activeLog = useLogsStore((s) => s.logs.find((l) => l.id === s.activeId) ?? null);
 
+  const mission = useMissionsStore((s) => s.mission);
+  const savedMissions = useMissionsStore((s) => s.saved.length);
+  const savedParams = useParamsStore((s) => s.saved);
+  const liveSource = useLiveStore((s) => s.source);
+  const liveNow = useLiveStore((s) => s.view);
+  const liveBound = useLiveStore((s) => s.bound);
+
   const progress = phaseProgress(template.sections, run.results);
   const worst = activeLog?.summary?.findings[0];
 
@@ -79,10 +89,34 @@ export default function DashboardPage() {
               sub={plan.ok ? `${planName} · ${plan.waypoints.length} waypoints · ${savedPlans} saved` : `${savedPlans} saved`}
             />
             <Standing
+              href="/missions"
+              label="Mission"
+              value={mission ? `${mission.items.length} item${mission.items.length === 1 ? '' : 's'}` : 'None open'}
+              sub={mission ? `${mission.name} · ${savedMissions} saved` : `${savedMissions} saved · open a mission file to see or convert it`}
+            />
+            <Standing
+              href="/parameters"
+              label="Parameters"
+              value={savedParams.length > 0 ? `${savedParams.length} saved set${savedParams.length === 1 ? '' : 's'}` : 'None saved'}
+              sub={savedParams[0] ? `Last: ${savedParams[0].name} · ${savedParams[0].count} parameters` : 'Open a parameter file to read or compare it'}
+            />
+            <Standing
               href="/checklists"
               label="Checklist"
               value={progress.criticalFailed > 0 ? 'No-go' : `${progress.done} of ${progress.total}`}
               sub={`${template.name} · ${savedRuns} saved run${savedRuns === 1 ? '' : 's'}`}
+            />
+            <Standing
+              href="/live"
+              label="Live"
+              value={liveLine(liveSource, liveNow, liveBound)}
+              sub={
+                liveSource === 'off'
+                  ? 'Listen for a connected aircraft, or play the practice flight'
+                  : liveNow?.battery?.volts != null
+                    ? `Battery ${fmtNum(liveNow.battery.volts, 2)} V${liveSource === 'practice' ? ' · made-up data' : ''}`
+                    : 'Nothing heard yet'
+              }
             />
             <Standing
               href="/logs"
@@ -166,8 +200,8 @@ export default function DashboardPage() {
         )}
 
         <p className="pb-4 text-center text-xs text-ink-muted">
-          Flight Companion works beside your ground station. It reads log files and writes plan files.
-          It never connects to an aircraft.
+          Flight Companion works beside your ground station. It reads logs, missions and parameter files, and writes missions and parameter files.
+          It never sends anything to an aircraft.
         </p>
       </div>
     </main>

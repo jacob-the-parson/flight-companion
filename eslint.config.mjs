@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // built, never written by hand: the desktop app's scripts and its installers
+    "desktop/dist/**",
+    "release/**",
+    "out-hosted/**",
   ]),
 ]);
 

@@ -1,0 +1,71 @@
+# How the desktop app is packed. Run from the app's folder:
+#   npm run desktop:pack    an unpacked app in release/, for trying
+#   npm run desktop:dist    the installer for the computer this runs on
+#
+# UNSIGNED, by the owner's decision. Windows shows a warning the user clicks
+# through; macOS blocks the app until the user approves it in System Settings.
+# desktop/README.md says what each user sees and does.
+appId: app.flightcompanion.desktop
+productName: Flight Companion
+copyright: Flight Companion
+
+directories:
+  output: release
+  buildResources: desktop/resources
+
+# The app inside the package is three small files. The main process is one
+# bundled script, so no node_modules goes in.
+files:
+  - desktop/dist/main.cjs
+  - desktop/dist/preload.cjs
+  - package.json
+  - "!node_modules/**/*"
+asar: true
+npmRebuild: false
+buildDependenciesFromSource: false
+
+# Beside the package, as plain files: the pages, and the two tools servers, which
+# are started as programs and so cannot be inside the archive.
+extraResources:
+  - from: out
+    to: pages
+  - from: desktop/dist
+    to: tools
+    filter:
+      - files-server.mjs
+      - observer-server.mjs
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  icon: desktop/resources/icon.png
+  # no certificate: nothing is signed, and nothing pretends to be
+  signAndEditExecutable: true
+  verifyUpdateCodeSignature: false
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  artifactName: Flight-Companion-Setup-${version}.${ext}
+  shortcutName: Flight Companion
+  deleteAppDataOnUninstall: false
+
+mac:
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+  icon: desktop/resources/icon.png
+  category: public.app-category.utilities
+  # "-" is an ad-hoc signature: made on the build machine, free, tied to no
+  # account. A Mac with Apple's own processor will not start an app that has no
+  # signature at all. It is not notarised, so Gatekeeper still asks the user.
+  identity: "-"
+  hardenedRuntime: false
+  gatekeeperAssess: false
+
+dmg:
+  artifactName: Flight-Companion-${version}-${arch}.${ext}
+
+publish: null

@@ -2,6 +2,8 @@
   "name": "flight-companion",
   "version": "0.1.0",
   "private": true,
+  "description": "A companion to a ground station: checklists, planning, missions, parameters, flight logs and an assistant.",
+  "main": "desktop/dist/main.cjs",
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack",
@@ -12,9 +14,26 @@
     "verify:planner": "node scripts/verify-planner.mjs",
     "verify:analysis": "node scripts/verify-analysis.mjs ../logs",
     "verify:mission": "node scripts/verify-mission.mjs",
-    "verify": "npm run verify:ulog && npm run verify:analysis && npm run verify:planner && npm run verify:mission"
+    "verify:params": "node scripts/verify-params.mjs --real ../params",
+    "verify:cli": "node scripts/verify-cli.mjs --logs ../logs --params ../params",
+    "verify:mcp": "node --no-warnings scripts/verify-mcp.mjs",
+    "verify:assistant": "node --no-warnings scripts/verify-assistant.mjs",
+    "verify:observer": "node --no-warnings scripts/verify-observer.mjs",
+    "verify:mavlink": "node --no-warnings scripts/verify-mavlink.mjs",
+    "verify:observer-js": "node --no-warnings scripts/verify-observer-js.mjs",
+    "verify:observer-node": "node --no-warnings scripts/verify-observer-node.mjs",
+    "fc": "node --no-warnings bin/fc.mjs",
+    "verify": "npm run verify:ulog && npm run verify:analysis && npm run verify:planner && npm run verify:mission && npm run verify:params && npm run verify:cli && npm run verify:mcp && npm run verify:assistant && npm run verify:observer && npm run verify:mavlink && npm run verify:observer-js && npm run verify:observer-node && npm run verify:desktop && npm run verify:hosted",
+    "desktop:build": "node desktop/build.mjs",
+    "desktop:start": "electron .",
+    "desktop:pack": "node desktop/build.mjs && electron-builder --dir --config desktop/electron-builder.yml",
+    "desktop:dist": "node desktop/build.mjs && electron-builder --config desktop/electron-builder.yml",
+    "verify:desktop": "node --no-warnings scripts/verify-desktop.mjs",
+    "hosted:build": "node scripts/build-hosted.mjs",
+    "verify:hosted": "node --no-warnings scripts/verify-hosted.mjs"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.31.0",
     "fast-xml-parser": "^5.11.2",
     "fflate": "^0.8.3",
     "idb-keyval": "^6.3.0",
@@ -24,7 +43,10 @@
     "next": "16.3.7",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "uplot": "^1.6.32",
+    "zod": "^4.6.5",
     "zustand": "^5.0.15"
   },
   "devDependencies": {
@@ -33,9 +55,13 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "electron": "^44.5.0",
+    "electron-builder": "^26.15.3",
+    "esbuild": "^0.28.2",
     "eslint": "^9",
     "eslint-config-next": "16.3.7",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "author": "Flight Companion"
 }

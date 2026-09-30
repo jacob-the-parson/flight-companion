@@ -4,10 +4,11 @@
 //   LogsInfoPage     — the aircraft, the firmware and the log file itself
 'use client';
 import { useMemo, useState } from 'react';
-import { Eye, EyeOff, Plus } from 'lucide-react';
+import { Check, ClipboardCopy, Eye, EyeOff, Plus } from 'lucide-react';
 import { DrawerField, DrawerSection, DrawerStat } from '@/components/ui/DrawerSection';
 import { INPUT_CLASS } from '@/components/shell/ModalProfile';
 import type { FlightSummary } from '@/lib/ulog/analysis';
+import { logBrief } from '@/lib/ulog/brief';
 import { fmtDuration, fmtNum } from '@/lib/units';
 import { useActiveLog, useActiveSummary, useLogsStore } from '@/stores/domains/logsStore';
 import { FindingCard } from './LogsParts';
@@ -153,6 +154,51 @@ function when(summary: FlightSummary): string {
   return new Date(summary.startUtcMs).toLocaleString();
 }
 
+/** Copy the log's numbers, findings and messages as JSON for an assistant. */
+function CopyLogBrief({ name, summary }: { name: string; summary: FlightSummary }) {
+  const [withPlace, setWithPlace] = useState(false);
+  const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle');
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(logBrief(name, summary, { withPlace }), null, 2));
+      setState('copied');
+    } catch {
+      setState('failed');
+    }
+    setTimeout(() => setState('idle'), 2500);
+  };
+  return (
+    <DrawerSection title="For an assistant">
+      <button
+        onClick={() => void copy()}
+        className="flex w-full items-center justify-center gap-1.5 rounded-md border border-edge bg-control py-2 text-xs font-medium text-ink transition-colors hover:bg-surface-sunken"
+      >
+        {state === 'copied' ? <Check size={13} className="text-status-good" /> : <ClipboardCopy size={13} />}
+        {state === 'copied' ? 'Copied' : 'Copy for an assistant'}
+      </button>
+      <label className="flex cursor-pointer items-start gap-2 text-xs text-ink">
+        <input
+          type="checkbox"
+          checked={withPlace}
+          onChange={(e) => setWithPlace(e.target.checked)}
+          className="mt-0.5 h-3.5 w-3.5 accent-violet-600"
+        />
+        <span>
+          Include where it took off
+          <span className="block text-[11px] text-ink-muted">
+            Off, the copy holds no latitude or longitude. A takeoff point is somebody&apos;s address.
+          </span>
+        </span>
+      </label>
+      <p className="text-[11px] leading-snug text-ink-muted">
+        {state === 'failed'
+          ? 'The browser did not allow the copy. Use Report in the footer instead.'
+          : 'Puts the numbers, findings, flight modes, messages and changed parameters on the clipboard as JSON, to paste into Claude, ChatGPT or another assistant.'}
+      </p>
+    </DrawerSection>
+  );
+}
+
 export function LogsInfoPage() {
   const log = useActiveLog();
   const summary = log?.summary;
@@ -186,6 +232,8 @@ export function LogsInfoPage() {
         <DrawerStat label="Gaps in logging" value={`${summary.log.dropouts} (${fmtNum(summary.log.dropoutMs / 1000, 1)} s)`} />
         <DrawerStat label="Ended cleanly" value={summary.log.truncated ? 'No' : 'Yes'} />
       </DrawerSection>
+
+      <CopyLogBrief name={log.name} summary={summary} />
 
       <p className="text-[11px] leading-snug text-ink-muted">
         Times on the charts count from the moment logging started, which on this firmware is the

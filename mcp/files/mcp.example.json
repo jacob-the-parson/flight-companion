@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "flight-companion": {
+      "command": "node",
+      "args": ["--no-warnings", "mcp/files/server.mjs"]
+    }
+  }
+}

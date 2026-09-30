@@ -15,7 +15,7 @@ The shell is the NRO Studio shell, carried over whole. What changed is named at 
 └┌FOOTER TRAY (full width, z-50): 5 keycaps, N/A until declared┐──┘
 ```
 - **Header** = an island with THREE COLUMNS: left-drawer toggle · breadcrumb ·
-  right-drawer toggle. The crumb rides the workspace island's center line: it springs left
+  the Learn switch and the right-drawer toggle. The crumb rides the workspace island's center line: it springs left
   by half the right drawer's footprint when that drawer opens.
 - **Left unit** = full-height island, SEGMENTED: header chunk · domain pager · favorites ·
   `drawerLeftBottom` per-domain area (non-pageable) · AircraftDock · FooterPilot.

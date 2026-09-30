@@ -535,7 +535,7 @@ export function MissionsConvert() {
           <section className="space-y-2">
             <h2 className="text-[11px] font-bold uppercase tracking-widest text-ink-muted">What each format can hold</h2>
             <p className="text-xs leading-snug text-ink-muted">
-              {from ? `This mission was read from a ${from.label.toLowerCase()}. ` : 'This mission was made in the app. '}
+              {from ? `This mission was read from: ${from.label}. ` : 'This mission was made in the app. '}
               A format can only keep what it has a place for. Choose a row to see what it would do to this mission.
             </p>
             <div className="overflow-x-auto rounded-lg border border-edge">
@@ -584,7 +584,7 @@ export function MissionsConvert() {
 
           <section className="space-y-3">
             <h2 className="text-[11px] font-bold uppercase tracking-widest text-ink-muted">
-              This mission as a {formatById(format).label.toLowerCase()}
+              This mission as: {formatById(format).label}
             </h2>
             {written && !written.ok && <CannotWrite reason={written.reason} />}
             {written?.ok && (

@@ -219,6 +219,7 @@ export const useMissionsStore = create<MissionsState>()(
           sampleId: null,
           tool: 'select',
           exportFormat: mission.source && mission.source !== 'csv' ? mission.source : s.exportFormat,
+          mapView: null,
           fitRequest: s.fitRequest + 1,
           notice: [
             from ? `Opened from ${from}.` : null,
@@ -242,6 +243,7 @@ export const useMissionsStore = create<MissionsState>()(
           sampleId: id,
           tool: 'select',
           exportFormat: sample.lookAt,
+          mapView: null,
           fitRequest: s.fitRequest + 1,
           notice: replaced ? 'The mission that was open had changes that were not saved. Undo brings it back.' : null,
         }));
@@ -432,6 +434,7 @@ export const useMissionsStore = create<MissionsState>()(
           loadedId: id,
           sampleId: null,
           tool: 'select',
+          mapView: null,
           fitRequest: s.fitRequest + 1,
           notice: null,
         }));

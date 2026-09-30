@@ -98,6 +98,11 @@ function GlobalSettings() {
           controller. It reads log and mission files you give it and writes mission files you take to
           your ground station.
         </p>
+        <p>
+          One optional part is set up separately: the observer, for an assistant on your own
+          computer. It is a separate program that hears a copy of what the aircraft tells
+          QGroundControl. It listens and cannot send. The Assistant screen explains it.
+        </p>
       </section>
     </div>
   );

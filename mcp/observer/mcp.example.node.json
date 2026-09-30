@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "flight-companion-observer": {
+      "command": "node",
+      "args": ["--no-warnings", "mcp/observer/server.mjs"],
+      "env": { "QGC_FWD_PORT": "14445" }
+    }
+  }
+}

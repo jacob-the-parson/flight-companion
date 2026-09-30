@@ -1,20 +1,13 @@
 // Small pieces shared by the Missions workspace, its views and its drawer pages.
 'use client';
 import { useRef, useState } from 'react';
-import {
-  Check,
-  CircleCheck,
-  CircleMinus,
-  CircleX,
-  ClipboardCopy,
-  Info,
-  OctagonAlert,
-  TriangleAlert,
-} from 'lucide-react';
+import { Check, CircleCheck, CircleMinus, CircleX, ClipboardCopy } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { CardCheck, LEVEL_STYLE, worstLevel as worst, type CheckLevel } from '@/components/ui/CardCheck';
+import { CardReport } from '@/components/ui/CardReport';
 import { INPUT_CLASS } from '@/components/shell/ModalProfile';
 import { missionBrief } from '@/lib/mission/brief';
-import type { CheckLevel, MissionCheck } from '@/lib/mission/checks';
+import type { MissionCheck } from '@/lib/mission/checks';
 import { DJI_AIRCRAFT, type DjiAircraftId } from '@/lib/mission/codecs/djiWpml';
 import { ACCEPTED_EXTENSIONS, FORMATS, type Holds } from '@/lib/mission/formats';
 import type { ConversionReport, MissionFormatId, WrittenFile } from '@/lib/mission/model';
@@ -32,78 +25,32 @@ export const ACCENT = {
   check: 'accent-teal-600',
 };
 
+export { LEVEL_STYLE };
+
 export const BTN =
   'flex w-full items-center justify-center gap-1.5 rounded-md border border-edge bg-control py-2 text-xs font-medium text-ink transition-colors hover:bg-surface-sunken disabled:cursor-not-allowed disabled:opacity-40';
 
 export const TOOL_BTN =
   'flex items-center gap-1.5 whitespace-nowrap rounded-md border border-edge bg-control px-2.5 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-surface-sunken disabled:cursor-not-allowed disabled:opacity-40';
 
-// status is always an icon AND a word; colour alone never carries it
-export const LEVEL_STYLE: Record<CheckLevel, { icon: LucideIcon; tone: string; box: string; word: string }> = {
-  critical: {
-    icon: OctagonAlert,
-    tone: 'text-status-critical',
-    box: 'border-red-300 bg-red-50/70 dark:border-red-900 dark:bg-red-950/30',
-    word: 'Stop',
-  },
-  warning: {
-    icon: TriangleAlert,
-    tone: 'text-status-warning',
-    box: 'border-amber-300 bg-amber-50/70 dark:border-amber-800 dark:bg-amber-950/30',
-    word: 'Check',
-  },
-  info: { icon: Info, tone: 'text-ink-muted', box: 'border-edge bg-control/50', word: 'Note' },
-  good: {
-    icon: CircleCheck,
-    tone: 'text-status-good',
-    box: 'border-emerald-300 bg-emerald-50/70 dark:border-emerald-800 dark:bg-emerald-950/30',
-    word: 'Good',
-  },
-};
-
 export function CheckCard({ check }: { check: MissionCheck }) {
   const select = useMissionsStore((s) => s.select);
-  // the mission, not a list made from it: a selector must hand back the same thing twice
   const mission = useMissionsStore((s) => s.mission);
-  const L = LEVEL_STYLE[check.level];
   return (
-    <article className={`rounded-lg border p-3 ${L.box}`}>
-      <div className="flex gap-2.5">
-        <L.icon size={15} className={`mt-0.5 shrink-0 ${L.tone}`} />
-        <div className="min-w-0 flex-1 space-y-1.5">
-          <h3 className="text-xs font-semibold text-ink">
-            <span className="mr-1.5 text-[9px] font-bold uppercase tracking-wider text-ink-muted">{L.word}</span>
-            {check.title}
-          </h3>
-          <p className="text-[11px] leading-snug text-ink-muted">{check.detail}</p>
-          {check.items && check.items.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {check.items.slice(0, 12).map((n) => (
-                <button
-                  key={n}
-                  onClick={() => select(mission?.items[n - 1]?.id ?? null)}
-                  className="rounded border border-edge bg-surface-raised px-1.5 py-0.5 font-mono text-[10px] text-ink transition-colors hover:bg-surface-sunken"
-                  title={`Select item ${n}`}
-                >
-                  {n}
-                </button>
-              ))}
-              {check.items.length > 12 && (
-                <span className="px-1 py-0.5 text-[10px] text-ink-muted">and {check.items.length - 12} more</span>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    </article>
+    <CardCheck
+      level={check.level}
+      title={check.title}
+      detail={check.detail}
+      chips={(check.items ?? []).map(String)}
+      onChip={(n) => select(mission?.items[Number(n) - 1]?.id ?? null)}
+      chipTitle={(n) => `Select item ${n}`}
+    />
   );
 }
 
 /** Worst level among a list of checks. */
 export function worstLevel(checks: MissionCheck[]): CheckLevel {
-  if (checks.some((c) => c.level === 'critical')) return 'critical';
-  if (checks.some((c) => c.level === 'warning')) return 'warning';
-  return 'good';
+  return worst(checks.map((c) => c.level));
 }
 
 const HOLDS: Record<Holds, { icon: LucideIcon; tone: string; word: string }> = {
@@ -123,56 +70,9 @@ export function HoldsCell({ value }: { value: Holds }) {
 }
 
 /** What a writer kept, changed and dropped. Shown before every download. */
-function Block({ title, tone, size, children }: { title: string; tone: string; size: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-1">
-      <h4 className={`text-[10px] font-bold uppercase tracking-wider ${tone}`}>{title}</h4>
-      <ul className={`space-y-1 leading-snug text-ink ${size}`}>{children}</ul>
-    </div>
-  );
-}
-
+/** What a writer kept, changed and dropped. Shown before every download. */
 export function ReportCard({ report, compact = false }: { report: ConversionReport; compact?: boolean }) {
-  const size = compact ? 'text-[11px]' : 'text-xs';
-  return (
-    <div className="space-y-3">
-      {report.dropped.length > 0 && (
-        <Block size={size} title="Not in the file" tone="text-status-critical">
-          {report.dropped.map((d) => (
-            <li key={d.what + d.why}>
-              <span className="font-semibold">
-                {d.what} ({d.count})
-              </span>
-              <span className="text-ink-muted">: {d.why}.</span>
-            </li>
-          ))}
-        </Block>
-      )}
-      {report.changed.length > 0 && (
-        <Block size={size} title="Changed to fit" tone="text-ink-muted">
-          {report.changed.map((c) => (
-            <li key={c}>{c}</li>
-          ))}
-        </Block>
-      )}
-      {report.kept.length > 0 && (
-        <Block size={size} title="Kept" tone="text-ink-muted">
-          {report.kept.map((k) => (
-            <li key={k}>{k}</li>
-          ))}
-        </Block>
-      )}
-      {report.warnings.length > 0 && (
-        <Block size={size} title="Know before you use it" tone="text-ink-muted">
-          {report.warnings.map((w) => (
-            <li key={w} className="text-ink-muted">
-              {w}
-            </li>
-          ))}
-        </Block>
-      )}
-    </div>
-  );
+  return <CardReport report={report} compact={compact} />;
 }
 
 export function FormatSelect({ id }: { id?: string }) {

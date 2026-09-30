@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <rect width="1024" height="1024" rx="224" fill="#18181b"/>
+  <g transform="rotate(12 512 512)">
+    <rect x="212" y="212" width="600" height="600" rx="120" fill="#f97316"/>
+  </g>
+  <text x="512" y="512" text-anchor="middle" dominant-baseline="central" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-weight="800" font-size="300" fill="#ffffff" letter-spacing="-8">FC</text>
+</svg>
