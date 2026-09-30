@@ -1,0 +1,77 @@
+# Builds the desktop app's installers: a Windows .exe and a macOS .dmg.
+#
+# NOT YET RUN. This file was written on 2026-09-29 and has never been run on
+# GitHub. The Windows half is the same commands that were run by hand on a
+# Windows 11 computer and produced a working installer. The macOS half has not
+# been run anywhere.
+#
+# It runs when a tag that begins with "v" is pushed, or when started by hand
+# from the Actions page. It does not run on an ordinary push.
+#
+# The installers are UNSIGNED. Nothing here holds a certificate or a secret.
+name: Desktop app
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write # to attach the installers to a release, and nothing else
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            flag: --win
+          - os: macos-latest
+            flag: --mac
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      # the checks that need no aircraft files and no Python
+      - run: npm run typecheck
+      - run: npm run verify:planner
+      - run: npm run verify:mission
+      - run: npm run verify:mcp
+      - run: npm run verify:assistant
+      - run: node desktop/build.mjs
+      - run: npx electron-builder ${{ matrix.flag }} --config desktop/electron-builder.yml --publish never
+        env:
+          # no certificate: say so, so that the build does not look for one
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installer-${{ matrix.os }}
+          path: |
+            release/*.exe
+            release/*.dmg
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: installers
+          merge-multiple: true
+      - name: Attach the installers to a draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        # a draft: a person reads it and publishes it
+        run: >
+          gh release create "${{ github.ref_name }}" installers/*
+          --repo "${{ github.repository }}"
+          --draft
+          --title "Flight Companion ${{ github.ref_name }}"
+          --notes "Unsigned installers. Windows shows a warning to click through; macOS asks for approval in System Settings. See desktop/README.md."
